@@ -74,7 +74,7 @@ def searchByTagText(tag):
     try:
         #TODO come up with a clever way to use the ranking
         #OBSERVATION: some tweets have more than one tag
-        return tweetsById[invertedIndex[tag][1][0][0]]["text"]
+        return {tag:tweetsById[invertedIndex[tag][1][0][0]]["text"]}
     except:
         return "not found"
 
@@ -85,6 +85,7 @@ def searchByTagTweet(tag):
     """
     try:
         return tweetsById[invertedIndex[tag][1][0][0]]
+
     except:
         return "not found"
 
