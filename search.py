@@ -3,6 +3,8 @@ from flask import Flask, request, jsonify
 import json
 twt = open("tweetFile.txt","r")
 
+app = Flask(__name__)
+
 @app.route('/search/', methods=['POST'])
 def hello():
     print "HELLO"
@@ -23,7 +25,7 @@ for t in twt:
     if (breaker == 10000):
         break
     twtDict[i] = t
-    i = i + 1
+    i += 1
     breaker += 1
 
 #print json.loads(twtDict[10000])["entities"]["hashtags"][0]["text"]
@@ -31,7 +33,7 @@ for tw in twtDict:
 
     try:
         t = json.loads(twtDict[tw])
-        if("entities" in t):
+        if "entities" in t:
             for tags in t['entities']['hashtags']:
                 if tags and 'text' in tags:
                     try:
@@ -41,9 +43,9 @@ for tw in twtDict:
                         print tags
 
             hashtag_dict = counter(hashtags)
-
+            print hashtag_dict
             for k, v in hashtag_dict.iteritems():
-                if (k in invertedIndex):
+                if k in invertedIndex:
                     invertedIndex[k][0] += v
                     invertedIndex[k][1].append(t["id"])
                 else:
@@ -54,9 +56,9 @@ for tw in twtDict:
         print tw
         continue
 
-print 'Inverted Index'
-for key in invertedIndex:
-    print key
+# print 'Inverted Index'
+# for key in invertedIndex:
+#     print key
 
 if __name__ == '__main__':
     app.run(
