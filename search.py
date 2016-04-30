@@ -1,6 +1,15 @@
 from collections import Counter as counter
+from flask import Flask, request, jsonify
 import json
 twt = open("tweetFile.txt","r")
+
+@app.route('/search/', methods=['POST'])
+def hello():
+    print "HELLO"
+    tags=request.form['tags']
+    print tags
+    tagged = {"tags": tags}
+    return jsonify(tagged)
 
 twtDict = {}
 invertedIndex = {}
@@ -48,3 +57,9 @@ for tw in twtDict:
 print 'Inverted Index'
 for key in invertedIndex:
     print key
+
+if __name__ == '__main__':
+    app.run(
+        host='0.0.0.0',
+        port=int("3000")
+    )
