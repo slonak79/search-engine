@@ -1,16 +1,24 @@
 from collections import Counter as counter
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, make_response, current_app
 import json
-twt = open("tweetFile.txt","r")
+twt = open("../tweetFile.txt","r")
+
+from datetime import timedelta
+from functools import update_wrapper
+from flask.ext.cors import CORS
+
 
 app = Flask(__name__)
+CORS(app)
 
 @app.route('/search/', methods=['POST'])
 def hello():
     print "HELLO"
     tags=request.form['tags']
-    print tags
-    tagged = {"tags": tags}
+
+    result = searchByTagText(tags)
+    print result
+    tagged = {"tags": result}
     return jsonify(tagged)
 
 
@@ -67,6 +75,7 @@ for k, v in invertedIndex.iteritems():
         doc[1] = float(doc[1])/float(v[0])
 
 
+
 def searchByTagText(tag):
     """
     :rtype: object
@@ -92,6 +101,9 @@ def searchByTagTweet(tag):
 # print 'Inverted Index'
 # for key in invertedIndex:
 #     print key
+
+
+
 
 if __name__ == '__main__':
     app.run(
