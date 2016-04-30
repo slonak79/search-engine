@@ -93,7 +93,7 @@ def searchByTagTweet(tag):
     :rtype: object
     """
     try:
-        return tweetsById[invertedIndex[tag][1][0][0]]
+        return {tag:tweetsById[invertedIndex[tag][1][0][0]]}
 
     except:
         return "not found"
