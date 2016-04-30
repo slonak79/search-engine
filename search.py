@@ -13,13 +13,15 @@ def hello():
     tagged = {"tags": tags}
     return jsonify(tagged)
 
+
 twtDict = {}
 invertedIndex = {}
 hashtags = []
-
+tweetsById = {}
 breaker = 0
 
 i = 0
+
 
 for t in twt:
     if (breaker == 10000):
@@ -28,7 +30,6 @@ for t in twt:
     i += 1
     breaker += 1
 
-#print json.loads(twtDict[10000])["entities"]["hashtags"][0]["text"]
 for tw in twtDict:
 
     try:
@@ -38,23 +39,55 @@ for tw in twtDict:
                 if tags and 'text' in tags:
                     try:
                         hashtags.append(tags['text'])
-                    except AttributeError:  
-                        print 'Attribute Error'
+
+                    except AttributeError:
+                        print '\n\n' + 'Attribute Error'
                         print tags
 
             hashtag_dict = counter(hashtags)
-            print hashtag_dict
+            #dict of tweets where key = tweet id, value: tweet
+            tweetsById[t["id"]] = t
+
             for k, v in hashtag_dict.iteritems():
                 if k in invertedIndex:
                     invertedIndex[k][0] += v
-                    invertedIndex[k][1].append(t["id"])
+                    #store individual count of tag per document
+                    invertedIndex[k][1].append([t["id"], v])
                 else:
-                    invertedIndex[k] = [v,[t["id"]]]
+                    invertedIndex[k] = [v, [[t["id"], v]]]
 
     except TypeError:
         print "Type Error occurred"
         print tw
         continue
+
+#turn indivivual count into rank
+for k, v in invertedIndex.iteritems():
+    for doc in v[1]:
+        doc[1] = float(doc[1])/float(v[0])
+
+
+def searchByTagText(tag):
+    """
+    :rtype: object
+    """
+    try:
+        #TODO come up with a clever way to use the ranking
+        #OBSERVATION: some tweets have more than one tag
+        return tweetsById[invertedIndex[tag][1][0][0]]["text"]
+    except:
+        return "not found"
+
+
+def searchByTagTweet(tag):
+    """
+    :rtype: object
+    """
+    try:
+        return tweetsById[invertedIndex[tag][1][0][0]]
+    except:
+        return "not found"
+
 
 # print 'Inverted Index'
 # for key in invertedIndex:
