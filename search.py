@@ -1,25 +1,8 @@
 from collections import Counter as counter
-from flask import Flask, request, jsonify, make_response, current_app
+
 import json
-twt = open("../tweetFile.txt","r")
+twt = open("tweetFile.txt","r")
 
-from datetime import timedelta
-from functools import update_wrapper
-from flask.ext.cors import CORS
-
-
-app = Flask(__name__)
-CORS(app)
-
-@app.route('/search/', methods=['POST'])
-def hello():
-    print "HELLO"
-    tags=request.form['tags']
-
-    result = searchByTagText(tags)
-    print result
-    tagged = {"tags": result}
-    return jsonify(tagged)
 
 
 twtDict = {}
@@ -46,12 +29,14 @@ for tw in twtDict:
             for tags in t['entities']['hashtags']:
                 if tags and 'text' in tags:
                     try:
+                        #TODO clear hashtags
                         hashtags.append(tags['text'])
 
                     except AttributeError:
                         print '\n\n' + 'Attribute Error'
                         print tags
-
+            print len(hashtags)
+            continue
             hashtag_dict = counter(hashtags)
             #dict of tweets where key = tweet id, value: tweet
             tweetsById[t["id"]] = t
@@ -75,7 +60,6 @@ for k, v in invertedIndex.iteritems():
         doc[1] = float(doc[1])/float(v[0])
 
 
-
 def searchByTagText(tag):
     """
     :rtype: object
@@ -83,7 +67,19 @@ def searchByTagText(tag):
     try:
         #TODO come up with a clever way to use the ranking
         #OBSERVATION: some tweets have more than one tag
-        return {tag:tweetsById[invertedIndex[tag][1][0][0]]["text"]}
+        return tweetsById[invertedIndex[tag][1][0][0]]["text"]
+    except:
+        return "not found"
+
+
+def searchByTagId(tag):
+    """
+    :rtype: object
+    """
+    try:
+        #TODO come up with a clever way to use the ranking
+        #OBSERVATION: some tweets have more than one tag
+        return tweetsById[invertedIndex[tag][1][0][0]]["id"]
     except:
         return "not found"
 
@@ -93,21 +89,7 @@ def searchByTagTweet(tag):
     :rtype: object
     """
     try:
-        return {tag:tweetsById[invertedIndex[tag][1][0][0]]}
-
+        return tweetsById[invertedIndex[tag][1][0][0]]
     except:
         return "not found"
 
-
-# print 'Inverted Index'
-# for key in invertedIndex:
-#     print key
-
-
-
-
-if __name__ == '__main__':
-    app.run(
-        host='0.0.0.0',
-        port=int("3000")
-    )
