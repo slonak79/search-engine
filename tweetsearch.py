@@ -1,6 +1,6 @@
 import json
 from collections import Counter as counter
-
+# TODO no need for this global variable, place it in __ini__ method
 TWEETFILE = open("../tweetFile.txt", "r")
 
 
@@ -11,7 +11,7 @@ class TweetRank:
     appear much more times in long documents than shorter ones. Thus, the term
     frequency is often divided by the document length (aka. the total number of
     terms in the document) as a way of normalization:
-
+#
     TF(t) = (Number of times term t appears in a document) / (Total number of terms in the document).
 
     IDF: Inverse Document Frequency, which measures how important a term is.
@@ -24,6 +24,10 @@ class TweetRank:
 
     TF-IDF = TF*IDF
     """
+    # TODO create __init__ method
+    # TODO create a method, generateTF(), that calculates the Term Frequency
+    # TODO create a method, generateIDF(), that calculates the Inverse Document Frequency
+
     tweetDictionay = {}
     invertedIndex = {}
     hashtags = []
@@ -32,11 +36,12 @@ class TweetRank:
 
     # gather 1000 tweets
     # NOTE search for a way to use all tweets.
+    # TODO the loop on row 40 is redundant, combine with loop on line 45
     for tweet, n in enumerate(TWEETFILE):
         if n == 10000:
             break
         tweetDictionay[n] = tweet
-
+    # TODO separate code in loop below, its doing too much
     for singleTweet in tweetDictionay:
         try:
             tweet = json.loads(tweetDictionay[singleTweet])
@@ -44,7 +49,7 @@ class TweetRank:
                 for tags in tweet['entities']['hashtags']:
                     if tags and 'text' in tags:
                         try:
-                            # collect all hashtags
+                            # collect all hashtags from a tweet
                             hashtags.append(tags['text'])
 
                         except AttributeError:
@@ -52,13 +57,14 @@ class TweetRank:
                             print(tags)
                 # aggregate tags
                 hashtagCount = counter(hashtags)
-                # dict of tweets where key = tweet id, value: tweet
                 # TODO - don't have to store entire tweet, we can store only the tweet id and retrive the entire tweet throuh the Twitter API
+                # dict of tweets where key = tweet id, value: tweet
                 tweetsById[tweet["id"]] = tweet
 
                 for k, v in hashtagCount.items():
                     if k in invertedIndex:
                         invertedIndex[k][0] += v
+                        # TODO too much data duplication, fix it
                         # store individual count of tag per document
                         invertedIndex[k][1].append([tweet["id"], v])
                     else:
@@ -69,6 +75,7 @@ class TweetRank:
             print(singleTweet)
             continue
 
+    # TODO fix how rank is been calculated.
     # turn indivivual count into rank
     for k, v in invertedIndex.items():
         for doc in v[1]:
