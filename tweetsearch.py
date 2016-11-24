@@ -1,7 +1,6 @@
 import json
 from collections import Counter as counter
 # TODO no need for this global variable, place it in __ini__ method
-TWEETFILE = open("../tweetFile.txt", "r")
 
 
 class TweetRank:
@@ -24,15 +23,14 @@ class TweetRank:
 
     TF-IDF = TF*IDF
     """
-    # TODO create __init__ method
     # TODO create a method, generateTF(), that calculates the Term Frequency
     # TODO create a method, generateIDF(), that calculates the Inverse Document Frequency
-
-    tweetDictionay = {}
-    invertedIndex = {}
-    hashtags = []
-    tweetsById = {}
-    breaker = 0
+    def __init__(self):
+        self.selftweetDictionay = {}
+        self.invertedIndex = {}
+        self.hashtags = []
+        self.tweetsById = {}
+        self.tweetFilePath = "../tweetFile.txt"
 
     # gather 1000 tweets
     # NOTE search for a way to use all tweets.
@@ -57,7 +55,7 @@ class TweetRank:
                             print(tags)
                 # aggregate tags
                 hashtagCount = counter(hashtags)
-                # TODO - don't have to store entire tweet, we can store only the tweet id and retrive the entire tweet throuh the Twitter API
+                #TODO - don't have to store entire tweet, we can store only the tweet id and retrive the entire tweet throuh the Twitter API
                 # dict of tweets where key = tweet id, value: tweet
                 tweetsById[tweet["id"]] = tweet
 
